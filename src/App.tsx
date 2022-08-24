@@ -1,71 +1,101 @@
-import { useForm } from 'react-hook-form'
-import { ErrorMessage } from '@hookform/error-message'
-import './App.css'
-import { useEffect } from 'react'
-import { RadioButton } from './components/RadioButton'
+import { useForm } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
+import "./App.css";
+import { useEffect, useState } from "react";
+import { RadioButton } from "./components/RadioButton";
+import { cuitCuil, getPattern, taxes } from "./utilities";
+import { Taxes } from "./enums/enums";
+import { PatternProps, TextInput } from "./components/TextInput";
+import { SelectOption } from "./components/SelectOption";
+import { Button, Stack } from "@mui/material";
+
+const initialValuesPattern: PatternProps = {
+  value: getPattern(Taxes.NOMENCLATURA),
+  message: "Formato no válido!",
+};
 
 function App() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    setError,
   } = useForm({
     defaultValues: {
-      tribu: '',
-      cuit: '',
-      search: '',
-      rate: '',
+      tribu: "",
+      cuit: "",
+      search: "",
+      rate: "",
     },
-  })
-  const onSubmit = (data: any) => console.log(data)
-
-  useEffect(() => {
-    console.log('Errors: ', errors)
-  }, [errors])
+  });
+  const [pattern, setPattern] = useState<PatternProps>(initialValuesPattern);
+  const onSubmit = (data: any) => console.log(data);
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      {/* <input {...register('tribu')} type="radio" value="01" />
-      <input {...register('tribu')} type="radio" value="02" />
-      <input {...register('tribu')} type="radio" value="03" /> */}
       <RadioButton
-        radios={[
-          { value: '01', description: 'Patente' },
-          { value: '02', description: 'Nomenclatura' },
-        ]}
+        radios={taxes}
+        callback={(e) => {
+          setPattern({ ...pattern, value: getPattern(e.target.value) });
+        }}
       />
-      <ErrorMessage errors={errors} message={'Campo requerido'} name="tribu" />
+      <ErrorMessage errors={errors} message={"Campo requerido"} name="tribu" />
       <br />
 
-      <input
-        {...register('cuit', { pattern: /^[\d]{10}$/, required: true })}
+      {/* <input
+        {...register("cuit", { pattern: cuitCuil, required: true })}
         placeholder="CUIT/CUIL"
+      /> */}
+      {/* <TextInput
+        register={register}
+        isDirty={isDirty}
+        name="cuitCuil"
+        pattern={{ value: cuitCuil, message: "Formato no valido" }}
+        setError={setError}
+        placeholder="Ingrese el cuit"
+        help="El formato debe ser"
+      /> */}
+      <ErrorMessage errors={errors} message={"Campo requerido"} name="cuit" />
+      <br />
+      <br />
+      <TextInput
+        register={register}
+        isDirty={isDirty}
+        name="search"
+        pattern={pattern}
+        setError={setError}
+        placeholder="Ingrese la busqueda"
+        help="El formato debe ser"
       />
-      <ErrorMessage errors={errors} message={'Campo requerido'} name="cuit" />
+      <ErrorMessage
+        errors={errors}
+        message={`${errors.search}`}
+        name="search"
+      />
       <br />
       <br />
-      <input {...register('search', { minLength: 2 })} placeholder="Dato a buscar" />
-      <ErrorMessage errors={errors} message={'Campo requerido'} name="search" />
+
+      <SelectOption disabledRate={false} register={register} />
       <br />
       <br />
-      <select {...register('rate', { required: true })}>
-        <option value="mensual">Mensual</option>
-        <option value="mensual-semestral">Mensual-Semestral</option>
-      </select>
-      <ErrorMessage errors={errors} message={'Campo requerido'} name="rate" />
-      <br />
-      <br />
-      <input type="submit" />
+      <Stack spacing={4} mt={2} direction="row">
+        <Button variant="contained" size="small">
+          adhesión recibo <br /> por email
+        </Button>
+        <Button variant="contained" size="small" type="submit">
+          pagar recibos
+        </Button>
+      </Stack>
     </form>
-  )
+  );
 }
 
-export default App
+export default App;
