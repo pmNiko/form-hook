@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import './App.css'
 import { useEffect } from 'react'
+import { RadioButton } from './components/RadioButton'
 
 function App() {
   const {
@@ -10,18 +11,16 @@ function App() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      checkbox: [],
-      radio: '',
-      category: '',
-      message: '',
+      tribu: '',
+      cuit: '',
+      search: '',
+      rate: '',
     },
   })
   const onSubmit = (data: any) => console.log(data)
 
   useEffect(() => {
-    console.log('Errors: ', errors.firstName)
+    console.log('Errors: ', errors)
   }, [errors])
 
   return (
@@ -34,23 +33,36 @@ function App() {
         alignItems: 'center',
       }}
     >
-      <input
-        {...register('firstName', { pattern: /^[\d]{4}$/, required: true })}
-        placeholder="First name"
+      {/* <input {...register('tribu')} type="radio" value="01" />
+      <input {...register('tribu')} type="radio" value="02" />
+      <input {...register('tribu')} type="radio" value="03" /> */}
+      <RadioButton
+        radios={[
+          { value: '01', description: 'Patente' },
+          { value: '02', description: 'Nomenclatura' },
+        ]}
       />
-      <ErrorMessage errors={errors} message={'Message error'} name="firstName" />
+      <ErrorMessage errors={errors} message={'Campo requerido'} name="tribu" />
+      <br />
 
-      <input {...register('lastName', { minLength: 2 })} placeholder="Last name" />
-
-      <select {...register('category', { required: true })}>
-        <option value="">Select...</option>
-        <option value="A">Category A</option>
-        <option value="B">Category B</option>
+      <input
+        {...register('cuit', { pattern: /^[\d]{10}$/, required: true })}
+        placeholder="CUIT/CUIL"
+      />
+      <ErrorMessage errors={errors} message={'Campo requerido'} name="cuit" />
+      <br />
+      <br />
+      <input {...register('search', { minLength: 2 })} placeholder="Dato a buscar" />
+      <ErrorMessage errors={errors} message={'Campo requerido'} name="search" />
+      <br />
+      <br />
+      <select {...register('rate', { required: true })}>
+        <option value="mensual">Mensual</option>
+        <option value="mensual-semestral">Mensual-Semestral</option>
       </select>
-      <ErrorMessage errors={errors} name="category" />
-
-      <textarea {...register('message', { maxLength: 200 })} placeholder="message" />
-
+      <ErrorMessage errors={errors} message={'Campo requerido'} name="rate" />
+      <br />
+      <br />
       <input type="submit" />
     </form>
   )
