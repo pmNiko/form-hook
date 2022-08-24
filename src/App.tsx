@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import './App.css'
+import { useEffect } from 'react'
 
 function App() {
   const {
@@ -19,10 +20,22 @@ function App() {
   })
   const onSubmit = (data: any) => console.log(data)
 
+  useEffect(() => {
+    console.log('Errors: ', errors.firstName)
+  }, [errors])
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <input
-        {...register('firstName', { pattern: /^[\w]{8}$/, required: true })}
+        {...register('firstName', { pattern: /^[\d]{4}$/, required: true })}
         placeholder="First name"
       />
       <ErrorMessage errors={errors} message={'Message error'} name="firstName" />
