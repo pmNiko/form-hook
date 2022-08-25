@@ -1,5 +1,6 @@
+import { UseFormRegister } from 'react-hook-form'
+import { ErrorMessage } from '@hookform/error-message'
 import { Box, TextField } from '@mui/material'
-import { FieldValues, UseFormRegister } from 'react-hook-form'
 import { CustomPopUp } from '../PopUps/CustomPopUp'
 
 type Props = {
@@ -8,6 +9,8 @@ type Props = {
   name: string
   regExp?: RegExp
   isDirty: boolean
+  errors: any
+  clearErrors: any
   setError: any
   required?: boolean
   placeholder?: string
@@ -22,8 +25,10 @@ export const TextInput = ({
   type = 'text',
   regExp = /^$/,
   isDirty,
+  errors,
+  clearErrors,
   setError,
-  required = true,
+  required = false,
   placeholder,
   help,
 }: Props) => {
@@ -40,6 +45,8 @@ export const TextInput = ({
                 type: 'custom',
                 message: 'El formato no es correcto.',
               })
+            } else {
+              clearErrors(name)
             }
           },
         })}
@@ -55,6 +62,11 @@ export const TextInput = ({
         InputProps={{
           endAdornment: <CustomPopUp help={help} />,
         }}
+      />
+      <ErrorMessage
+        errors={errors}
+        message={`${errors.name?.message || 'El formato no es correcto.'}`}
+        name={name}
       />
     </Box>
   )

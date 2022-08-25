@@ -1,33 +1,29 @@
-import { ErrorMessage } from '@hookform/error-message'
 import { Button, Stack } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import './App.css'
 import { RadioButton } from './components/RadioButton'
 import { SelectOption } from './components/SelectOption'
 import { TextInput } from './components/TextInput'
-import { Taxes } from './enums/enums'
-import { defaultValues, useFormTools } from './hooks/useFormTools'
-import { cuitCuil, getExample, getPattern, getPlaceholder, taxes } from './utilities'
+import { useFormTools } from './hooks/useFormTools'
+import { cuitCuil, taxes } from './utilities'
+import './App.css'
 
 function App() {
   const {
-    getValues,
     register,
     handleSubmit,
     errors,
     isDirty,
+    clearErrors,
     setError,
     selectTax,
-    disabledSubmit,
-    disabledRate,
-    disabledInput,
     regExp,
     placeholder,
     helpValue,
+    disabledSubmit,
+    disabledRate,
+    disabledInput,
   } = useFormTools()
 
-  const onSubmit = (data: any) => console.log('Formulario :: ', getValues())
+  const onSubmit = (data: any) => console.log('Formulario :: ', data)
 
   return (
     <form
@@ -45,44 +41,55 @@ function App() {
       <TextInput
         register={register}
         isDirty={isDirty}
+        errors={errors}
+        clearErrors={clearErrors}
         name="cuitCuil"
         regExp={cuitCuil}
         setError={setError}
+        required={true}
         placeholder="CUIT / CUIL"
         help="Ingrese su CUIT / CUIL sin guiones."
       />
-      <ErrorMessage
-        errors={errors}
-        message={`${errors.cuitCuil?.message || 'Campo obligatorio!'}`}
-        name="cuitCuil"
-      />
+
       <br />
       <br />
       <TextInput
+        disabled={disabledInput}
         register={register}
         isDirty={isDirty}
+        errors={errors}
+        clearErrors={clearErrors}
         name="datoABuscar"
         regExp={regExp}
         setError={setError}
+        required={!disabledInput}
         placeholder={placeholder}
         help={helpValue}
       />
-      <ErrorMessage
-        errors={errors}
-        message={`${errors.datoABuscar?.message || 'Campo obligatorio!'}`}
-        name="datoABuscar"
-      />
+
       <br />
       <br />
 
-      <SelectOption disabledRate={false} register={register} />
+      <SelectOption disabledRate={disabledRate} register={register} />
       <br />
       <br />
       <Stack spacing={4} mt={2} direction="row">
-        <Button variant="contained" size="small" type="submit">
+        <Button
+          type="submit"
+          variant="contained"
+          size="small"
+          disabled={disabledSubmit}
+          style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+        >
           adhesión recibo <br /> por email
         </Button>
-        <Button variant="contained" size="small" type="submit">
+        <Button
+          type="submit"
+          variant="contained"
+          size="small"
+          disabled={disabledSubmit}
+          style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+        >
           pagar recibos
         </Button>
       </Stack>

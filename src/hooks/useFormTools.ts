@@ -25,13 +25,14 @@ export const useFormTools = () => {
     getValues,
     watch,
     setError,
+    clearErrors,
   } = useForm({ defaultValues })
   const [regExp, setRegExp] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
   const [placeholder, setPlaceholder] = useState(getPlaceholder(Taxes.NOMENCLATURA))
   const [helpValue, setHelpValue] = useState(getExample(Taxes.NOMENCLATURA))
   const [disabledInput, setDisabledInput] = useState(false)
   const [disabledRate, setDisabledRate] = useState(false)
-  const [disabledSubmit, setDisabledSubmit] = useState(false)
+  const [disabledSubmit, setDisabledSubmit] = useState(true)
 
   const selectTax = ({ target: { value: tribu } }: any) => {
     setRegExp(getPattern(tribu))
@@ -41,7 +42,7 @@ export const useFormTools = () => {
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      const { tribu, cuitCuil, datoABuscar, rate } = getValues()
+      const { tribu, cuitCuil, datoABuscar } = getValues()
 
       tribu === Taxes.RENTAS_VARIAS ? setDisabledInput(true) : setDisabledInput(false)
       tribu === Taxes.RENTAS_VARIAS ? setDisabledRate(true) : setDisabledRate(false)
@@ -59,11 +60,11 @@ export const useFormTools = () => {
   }, [watch, getValues])
 
   return {
-    getValues,
     register,
     handleSubmit,
     errors,
     isDirty,
+    clearErrors,
     setError,
     selectTax,
     disabledSubmit,
