@@ -26,11 +26,18 @@ function App() {
     disabledInput,
   } = useFormTools()
 
-  const onSubmit = (data: any) => console.log('Formulario :: ', data)
+  const handleSearch = (data: any) => {
+    console.log('Search')
+    console.log('Formulario :: ', data)
+  }
+
+  const handleSendEmail = (data: any) => {
+    console.log('Email')
+    console.log('Formulario :: ', data)
+  }
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -94,6 +101,7 @@ function App() {
             size="small"
             disabled={disabledSubmit || !validCaptcha}
             style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+            onClick={handleSubmit(handleSendEmail)}
           >
             adhesión recibo <br /> por email
           </Button>
@@ -103,6 +111,7 @@ function App() {
             size="small"
             disabled={disabledSubmit || !validCaptcha}
             style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+            onClick={handleSubmit(handleSearch)}
           >
             pagar recibos
           </Button>

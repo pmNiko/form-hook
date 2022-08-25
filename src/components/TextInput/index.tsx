@@ -1,6 +1,6 @@
 import { UseFormRegister } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import { Box, TextField } from '@mui/material'
+import { Box, TextField, Typography } from '@mui/material'
 import { CustomPopUp } from '../PopUps/CustomPopUp'
 
 type Props = {
@@ -63,11 +63,13 @@ export const TextInput = ({
           endAdornment: <CustomPopUp help={help} />,
         }}
       />
-      <ErrorMessage
-        errors={errors}
-        message={`${errors.name?.message || 'El formato no es correcto.'}`}
-        name={name}
-      />
+      <Typography variant="caption" display="block" gutterBottom m={2} style={{ color: 'red' }}>
+        <ErrorMessage
+          errors={errors}
+          message={`${errors.name?.message || 'El formato no es correcto.'}`}
+          name={name}
+        />
+      </Typography>
     </Box>
   )
 }

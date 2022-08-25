@@ -26,6 +26,7 @@ export const useFormTools = () => {
     watch,
     setError,
     clearErrors,
+    resetField,
   } = useForm({ defaultValues })
   const [regExp, setRegExp] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
   const [placeholder, setPlaceholder] = useState(getPlaceholder(Taxes.NOMENCLATURA))
@@ -44,8 +45,15 @@ export const useFormTools = () => {
     const subscription = watch((value, { name, type }) => {
       const { tribu, cuitCuil, datoABuscar } = getValues()
 
-      tribu === Taxes.RENTAS_VARIAS ? setDisabledInput(true) : setDisabledInput(false)
-      tribu === Taxes.RENTAS_VARIAS ? setDisabledRate(true) : setDisabledRate(false)
+      if (tribu === Taxes.RENTAS_VARIAS) {
+        setDisabledInput(true)
+        setDisabledRate(true)
+        clearErrors('datoABuscar')
+        datoABuscar !== '' && resetField('datoABuscar')
+      } else {
+        setDisabledInput(false)
+        setDisabledRate(false)
+      }
 
       if (cuitCuil !== '' && tribu === Taxes.RENTAS_VARIAS) {
         setDisabledSubmit(false)
@@ -57,7 +65,7 @@ export const useFormTools = () => {
     })
 
     return () => subscription.unsubscribe()
-  }, [watch, getValues])
+  }, [watch])
 
   return {
     register,
