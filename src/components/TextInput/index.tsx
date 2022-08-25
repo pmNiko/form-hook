@@ -2,16 +2,11 @@ import { Box, TextField } from '@mui/material'
 import { FieldValues, UseFormRegister } from 'react-hook-form'
 import { CustomPopUp } from '../PopUps/CustomPopUp'
 
-export type PatternProps = {
-  value: RegExp
-  message: string
-}
-
 type Props = {
   disabled?: boolean
   register: UseFormRegister<any>
   name: string
-  pattern?: PatternProps
+  regExp?: RegExp
   isDirty: boolean
   setError: any
   required?: boolean
@@ -25,7 +20,7 @@ export const TextInput = ({
   register,
   name,
   type = 'text',
-  pattern,
+  regExp = /^$/,
   isDirty,
   setError,
   required = true,
@@ -37,10 +32,10 @@ export const TextInput = ({
       <TextField
         key={name}
         {...register(name, {
-          pattern,
+          pattern: { value: regExp, message: 'El formato no es correcto.' },
           required,
           onBlur(e) {
-            if (isDirty && !pattern?.value.test(e.target.value)) {
+            if (isDirty && !regExp.test(e.target.value)) {
               setError(name, {
                 type: 'custom',
                 message: 'El formato no es correcto.',

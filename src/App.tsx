@@ -1,35 +1,39 @@
-import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import './App.css'
-import { useEffect, useState } from 'react'
-import { RadioButton } from './components/RadioButton'
-import { cuitCuil, getPattern, taxes } from './utilities'
-import { Taxes } from './enums/enums'
-import { PatternProps, TextInput } from './components/TextInput'
-import { SelectOption } from './components/SelectOption'
 import { Button, Stack } from '@mui/material'
-
-const initialValuesPattern: PatternProps = {
-  value: getPattern(Taxes.NOMENCLATURA),
-  message: 'Formato no válido!',
-}
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import './App.css'
+import { RadioButton } from './components/RadioButton'
+import { SelectOption } from './components/SelectOption'
+import { TextInput } from './components/TextInput'
+import { Taxes } from './enums/enums'
+import { defaultValues } from './hooks/useFormTools'
+import { cuitCuil, getExample, getPattern, getPlaceholder, taxes } from './utilities'
 
 function App() {
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
+    getValues,
+    watch,
     setError,
-  } = useForm({
-    defaultValues: {
-      tribu: '',
-      cuit: '',
-      search: '',
-      rate: '',
-    },
-  })
-  const [pattern, setPattern] = useState<PatternProps>(initialValuesPattern)
+  } = useForm({ defaultValues })
+
+  const [regExp, setRegExp] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
+  const [helpSearch, setHelpSearch] = useState(getExample(Taxes.NOMENCLATURA))
+  const [placeholder, setPlaceholder] = useState(getPlaceholder(Taxes.NOMENCLATURA))
   const onSubmit = (data: any) => console.log(data)
+
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      const values = getValues()
+      // console.log(name, getValues(name!))
+      console.log('Valores ', values)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [watch, getValues])
 
   return (
     <form
@@ -42,43 +46,45 @@ function App() {
       }}
     >
       <RadioButton
+        name="tribu"
+        register={register}
         radios={taxes}
         callback={(e) => {
-          setPattern({ ...pattern, value: getPattern(e.target.value) })
+          setRegExp(getPattern(e.target.value))
+          setHelpSearch(getExample(e.target.value))
         }}
       />
-
       <br />
 
       <TextInput
         register={register}
         isDirty={isDirty}
-        name="cuit"
-        pattern={{ value: cuitCuil, message: 'Formato no valido' }}
+        name="cuitCuil"
+        regExp={cuitCuil}
         setError={setError}
-        placeholder="Ingrese el cuit"
-        help="El formato debe ser"
+        placeholder="CUIT / CUIL"
+        help="Ingrese su CUIT / CUIL sin guiones."
       />
       <ErrorMessage
         errors={errors}
-        message={`${errors.cuit?.message || 'Campo obligatorio!'}`}
-        name="cuit"
+        message={`${errors.cuitCuil?.message || 'Campo obligatorio!'}`}
+        name="cuitCuil"
       />
       <br />
       <br />
       <TextInput
         register={register}
         isDirty={isDirty}
-        name="search"
-        pattern={pattern}
+        name="datoABuscar"
+        regExp={regExp}
         setError={setError}
-        placeholder="Ingrese la busqueda"
-        help="El formato debe ser"
+        placeholder={placeholder}
+        help={helpSearch}
       />
       <ErrorMessage
         errors={errors}
-        message={`${errors.search?.message || 'Campo obligatorio!'}`}
-        name="search"
+        message={`${errors.datoABuscar?.message || 'Campo obligatorio!'}`}
+        name="datoABuscar"
       />
       <br />
       <br />
