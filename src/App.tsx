@@ -1,12 +1,15 @@
-import { Button, Stack } from '@mui/material'
+import { Button, Grid, Stack } from '@mui/material'
 import { RadioButton } from './components/RadioButton'
 import { SelectOption } from './components/SelectOption'
 import { TextInput } from './components/TextInput'
 import { useFormTools } from './hooks/useFormTools'
 import { cuitCuil, taxes } from './utilities'
+import ReCAPTCHA from 'react-google-recaptcha'
 import './App.css'
+import { useState } from 'react'
 
 function App() {
+  const [validCaptcha, setValidCaptcha] = useState(false)
   const {
     register,
     handleSubmit,
@@ -73,26 +76,33 @@ function App() {
       <SelectOption disabledRate={disabledRate} register={register} />
       <br />
       <br />
-      <Stack spacing={4} mt={2} direction="row">
-        <Button
-          type="submit"
-          variant="contained"
-          size="small"
-          disabled={disabledSubmit}
-          style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
-        >
-          adhesión recibo <br /> por email
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          size="small"
-          disabled={disabledSubmit}
-          style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
-        >
-          pagar recibos
-        </Button>
-      </Stack>
+      <Grid display="flex" justifyContent="center" alignItems="center" flexDirection="column">
+        <ReCAPTCHA
+          sitekey={'6Lc8YkghAAAAADuMQezNyOSIpPk91MEinHneDsl-'}
+          onChange={() => setValidCaptcha(!validCaptcha)}
+        />
+
+        <Stack spacing={4} mt={2} direction="row">
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            disabled={disabledSubmit || !validCaptcha}
+            style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+          >
+            adhesión recibo <br /> por email
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            disabled={disabledSubmit || !validCaptcha}
+            style={{ color: `${disabledSubmit ? '' : 'primary'}` }}
+          >
+            pagar recibos
+          </Button>
+        </Stack>
+      </Grid>
     </form>
   )
 }
