@@ -73,7 +73,12 @@ function App() {
       <br />
       <br />
 
-      <SelectOption disabledRate={disabledRate} register={register} />
+      <SelectOption
+        disabledRate={disabledRate}
+        register={register}
+        name="rate"
+        options={['mensual', 'mensual-semestral']}
+      />
       <br />
       <br />
       <Grid display="flex" justifyContent="center" alignItems="center" flexDirection="column">
