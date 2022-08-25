@@ -17,12 +17,6 @@ export const defaultValues: FormProps = {
   rate: 'mensual',
 }
 
-/**
- * CustomHook useFormTools
- * @description  Se encarga de cambiar los valores del input de busqueda y
- * de alternar la habitilitación de campos y boton de submit
- * @returns @interface ReturnProps
- */
 export const useFormTools = () => {
   const {
     register,
@@ -32,45 +26,50 @@ export const useFormTools = () => {
     watch,
     setError,
   } = useForm({ defaultValues })
-  const [pattern, setPattern] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
+  const [regExp, setRegExp] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
   const [placeholder, setPlaceholder] = useState(getPlaceholder(Taxes.NOMENCLATURA))
   const [helpValue, setHelpValue] = useState(getExample(Taxes.NOMENCLATURA))
   const [disabledInput, setDisabledInput] = useState(false)
   const [disabledRate, setDisabledRate] = useState(false)
   const [disabledSubmit, setDisabledSubmit] = useState(false)
-  const [form, setForm] = useState<FormProps>(defaultValues)
 
-  /** Cambia la validación, el placeholder y el tooltip al elegir un tributo. */
   const selectTax = ({ target: { value: tribu } }: any) => {
-    setPattern(getPattern(tribu))
+    setRegExp(getPattern(tribu))
     setPlaceholder(getPlaceholder(tribu))
     setHelpValue(getExample(tribu))
   }
 
-  // Se encarga de habilitar ó deshabilitar los input y el boton submit.
   useEffect(() => {
-    const { cuitCuil, tribu, datoABuscar } = form
+    const subscription = watch((value, { name, type }) => {
+      const { tribu, cuitCuil, datoABuscar, rate } = getValues()
 
-    tribu === Taxes.RENTAS_VARIAS ? setDisabledInput(true) : setDisabledInput(false)
-    tribu === Taxes.RENTAS_VARIAS ? setDisabledRate(true) : setDisabledRate(false)
+      tribu === Taxes.RENTAS_VARIAS ? setDisabledInput(true) : setDisabledInput(false)
+      tribu === Taxes.RENTAS_VARIAS ? setDisabledRate(true) : setDisabledRate(false)
 
-    if (cuitCuil !== '' && tribu === Taxes.RENTAS_VARIAS) {
-      setDisabledSubmit(false)
-    } else if (cuitCuil !== '' && datoABuscar !== '') {
-      setDisabledSubmit(false)
-    } else {
-      setDisabledSubmit(true)
-    }
-  }, [form])
+      if (cuitCuil !== '' && tribu === Taxes.RENTAS_VARIAS) {
+        setDisabledSubmit(false)
+      } else if (cuitCuil !== '' && datoABuscar !== '') {
+        setDisabledSubmit(false)
+      } else {
+        setDisabledSubmit(true)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [watch, getValues])
 
   return {
-    ...form,
-    setForm,
+    getValues,
+    register,
+    handleSubmit,
+    errors,
+    isDirty,
+    setError,
     selectTax,
     disabledSubmit,
     disabledRate,
     disabledInput,
-    pattern,
+    regExp,
     placeholder,
     helpValue,
   }

@@ -7,33 +7,27 @@ import { RadioButton } from './components/RadioButton'
 import { SelectOption } from './components/SelectOption'
 import { TextInput } from './components/TextInput'
 import { Taxes } from './enums/enums'
-import { defaultValues } from './hooks/useFormTools'
+import { defaultValues, useFormTools } from './hooks/useFormTools'
 import { cuitCuil, getExample, getPattern, getPlaceholder, taxes } from './utilities'
 
 function App() {
   const {
+    getValues,
     register,
     handleSubmit,
-    formState: { errors, isDirty },
-    getValues,
-    watch,
+    errors,
+    isDirty,
     setError,
-  } = useForm({ defaultValues })
+    selectTax,
+    disabledSubmit,
+    disabledRate,
+    disabledInput,
+    regExp,
+    placeholder,
+    helpValue,
+  } = useFormTools()
 
-  const [regExp, setRegExp] = useState<RegExp>(getPattern(Taxes.NOMENCLATURA))
-  const [helpSearch, setHelpSearch] = useState(getExample(Taxes.NOMENCLATURA))
-  const [placeholder, setPlaceholder] = useState(getPlaceholder(Taxes.NOMENCLATURA))
-  const onSubmit = (data: any) => console.log(data)
-
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      const values = getValues()
-      // console.log(name, getValues(name!))
-      console.log('Valores ', values)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [watch, getValues])
+  const onSubmit = (data: any) => console.log('Formulario :: ', getValues())
 
   return (
     <form
@@ -45,15 +39,7 @@ function App() {
         alignItems: 'center',
       }}
     >
-      <RadioButton
-        name="tribu"
-        register={register}
-        radios={taxes}
-        callback={(e) => {
-          setRegExp(getPattern(e.target.value))
-          setHelpSearch(getExample(e.target.value))
-        }}
-      />
+      <RadioButton name="tribu" register={register} radios={taxes} callback={(e) => selectTax(e)} />
       <br />
 
       <TextInput
@@ -79,7 +65,7 @@ function App() {
         regExp={regExp}
         setError={setError}
         placeholder={placeholder}
-        help={helpSearch}
+        help={helpValue}
       />
       <ErrorMessage
         errors={errors}
